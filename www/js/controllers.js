@@ -1,5 +1,5 @@
 angular
-  .module("starter.controllers", [])
+  .module("starter.controllers", ["ngStorage"])
 
   // --- Standard Ceres Promies ---
   .service("CeresPromise", function($http, $q) {
@@ -41,6 +41,7 @@ angular
     $ionicModal,
     $timeout,
     $http,
+    $window,
     CeresPromise
   ) {
     // With the new view caching in Ionic, Controllers are only called
@@ -87,7 +88,53 @@ angular
     };
   })
 
-  .controller("PlaylistsCtrl", function($scope, CeresPromise) {
+  .controller("PlaylistsCtrl", function($scope, $window, CeresPromise) {
+    // --- Check if this route has been created and is to be updated.
+    var StoreScheds = [];
+    var NewSet = [];
+    var ObjScheds = [];
+    var StoredScheds = [];
+
+    StoredScheds = $window.localStorage.getItem("StoredScheds");
+    if (StoredScheds == null) {
+      NewSet = {
+        SchedKey: FullKey
+      };
+      ObjScheds.push(NewSet);
+      $window.localStorage.setItem("StoredScheds", JSON.stringify(ObjScheds));
+    } else {
+      NewSet = {
+        SchedKey: FullKey
+      };
+      ObjScheds = JSON.parse(StoredScheds);
+      var LenAr = ObjScheds.length;
+      var FoundI = false;
+      for (var i = 0; i < LenAr; i++) {
+        TableSched = JSON.stringify(ObjScheds[i].SchedKey);
+        var FindIt = TableSched.indexOf(FullKey);
+        if (FindIt > 0) {
+          FoundI = true;
+          break;
+        }
+      }
+      if (FoundI == false) {
+        ObjScheds.push(NewSet);
+        $window.localStorage.setItem("StoredScheds", JSON.stringify(ObjScheds));
+      }
+    }
+    // --- Initialise the array with the details stored so far
+    $scope.comm2 = [];
+    $scope.comm2 = $window.localStorage.getItem($scope.FullKey);
+
+    // --- Check if position is on
+    if ("geolocation" in navigator) {
+    } else {
+      alert(
+        "GeLocation is NOT available. \nEnsure location on and reselect URL"
+      );
+      return;
+    }
+
     // --- FIRST TIME THRU: Get the full delivery schedule from Larportal
     var FullKey = "Roger";
 
@@ -116,9 +163,6 @@ angular
         $scope.Item = $scope.FullSched.data[0].Itm;
         $scope.Des = $scope.FullSched.data[0].Des;
 
-
-
-
         $scope.CountRoute = data.data.length - 1;
         var LastDel = data.data.length - 1;
         $scope.FullSched = data;
@@ -144,7 +188,6 @@ angular
           $scope.ShowNext = 1;
         }
         alert("This is it: " + $scope.FullSched.data[1].Add1);
-
 
         var ThisDoc = $scope.ObjSchedsCol[$scope.DocCount].DelNo;
         var ThisCol = $scope.ObjSchedsCol[$scope.DocCount].Colour;
@@ -178,6 +221,58 @@ angular
       $scope.Item = $scope.FullSched.data[sub].Itm;
       $scope.Des = $scope.FullSched.data[sub].Des;
     };
+
+    function geo_success(position) {
+      $scope.FullGPS =
+        position.coords.latitude + "," + position.coords.longitude;
+      $scope.ThisLat = position.coords.latitude;
+      $scope.ThisLng = position.coords.longitude;
+      $scope.Heading = position.coords.heading;
+      $scope.time = position.timestamp;
+      if (position.coords.accuracy != null) {
+        $scope.accuracy = position.coords.accuracy.toFixed(2);
+      }
+      if (position.coords.altitude != null) {
+        $scope.altitude = position.coords.altitude.toFixed(2);
+      }
+      $scope.GotCords = 1;
+
+      // --- Convert speed from m/s to kph
+      var speed = position.coords.speed * 3.6;
+      $scope.speed = speed.toFixed(2);
+
+        alert("FullGPS: " + $scope.FullGPS);
+
+      // --- Now write the marked positions to local storage 
+      NewObj = {
+        Tracks: $scope.DriverName,
+        Route: $scope.DelRoute,
+        Track_GPS: $scope.FullGPS,
+        Lat: $scope.ThisLat,
+        Long: $scope.ThisLng,
+        Heading: $scope.Heading,
+        GPSTime: $scope.time,
+        Accuracy: $scope.accuracy,
+        Altitud: $scope.altitude,
+        Speed: $scope.speed
+      };
+    }
+
+    function geo_error() {
+      alert("Sorry, no position available.");
+    }
+
+    var geo_options = {
+      enableHighAccuracy: true,
+      maximumAge: 30000,
+      timeout: 27000
+    };
+
+    var wpid = navigator.geolocation.watchPosition(
+      geo_success,
+      geo_error,
+      geo_options
+    );
 
     $scope.playlists = [
       { title: "Reggae", id: 1 },
