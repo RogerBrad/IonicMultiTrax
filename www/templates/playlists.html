@@ -1,9 +1,140 @@
-<ion-view view-title="Playlists">
+<ion-view view-title="Delivery Notes on Schedule">
   <ion-content>
-    <ion-list>
-      <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
-        {{playlist.title}}
-      </ion-item>
-    </ion-list>
+
+    <div id="AuthCont" class="col-xs-10">
+      <table style="text-align:left;">
+        <tr ng-show="ShowLine1">
+          <td>
+            <b>Driver Name:</b>
+          </td>
+          <td>{{DriverName}}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Delivery Route:</b>
+          </td>
+          <td>{{DelRoute}}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Delivery Number:</b>
+          </td>
+          <td>{{DocNo}}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Cust Acc No</b>
+          </td>
+          <td>{{Acc}}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Cust Name</b>
+          </td>
+          <td>{{CName}}</td>
+        </tr>
+        <tr ng-style="HeaderStyle">
+          <td>
+            <b>Del Add:</b>
+          </td>
+          <td>{{Add1}}</td>
+        </tr>
+        <tr ng-style="HeaderStyle">
+          <td>
+            <b></b>
+          </td>
+          <td>{{Add2}}</td>
+        </tr>
+        <tr ng-style="HeaderStyle">
+          <td>
+            <b></b>
+          </td>
+          <td>{{Add3}}</td>
+        </tr>
+        <tr ng-style="HeaderStyle">
+          <td>
+            <b></b>
+          </td>
+          <td>{{Add4}}</td>
+        </tr>
+        <tr ng-style="HeaderStyle">
+          <td>
+            <b></b>
+          </td>
+          <td>{{Pcd}}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Del Inst:</b>
+          </td>
+          <td>{{Ins1}}</td>
+        </tr>
+        <tr>
+          <td>
+            <b></b>
+          </td>
+          <td>{{Ins2}}</td>
+        </tr>
+        <tr>
+          <td>
+            <b></b>
+          </td>
+          <td>{{Ins3}}</td>
+        </tr>
+        <tr>
+          <td>
+            <b></b>
+          </td>
+          <td>{{Ins4}}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Item Code:</b>
+          </td>
+          <td>{{Item}}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Descripton:</b>
+          </td>
+          <td>{{Des}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="row">
+      <div class="col" style="text-align: left">
+         <button
+            ng-click="NextDelNote('prev')"
+            ng-style="{'visibility': !ShowPrevious ? 'visible' : 'hidden'}">
+                <
+         </button>
+      </div>
+      <div class="col" style="text-align: right">
+         <button
+            ng-click="NextDelNote('next')"
+            ng-style="{'visibility': !ShowNext ? 'visible' : 'hidden'}">
+                >
+         </button>
+      </div>
+   </div>
+
+   <div class="row">
+      <div class="col" style="text-align: right">
+         <button type="button" class="btn btn-primary btn-lg"
+           ng-click="SaveDelPos(Acc, DocNo)">
+            DELIVERY POS
+         </button>
+      </div>
+      <div class="col" style="text-align: left">
+         <button type="button" class="btn btn-primary btn-lg"
+            ng-click="DoPODOtp()">
+           POD OTP
+         </button>
+      </div>
+   </div>
+
   </ion-content>
 </ion-view>
